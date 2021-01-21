@@ -273,7 +273,11 @@ public:
     template<typename T>
     T& cast()
     {
+    #if 0 // MB patch
         if (policy->type() != typeid(T)) throw anyimpl::bad_any_cast();
+    #elseif
+        assert(policy->type() == typeid(T));
+    #endif // MB patch
         T* r = reinterpret_cast<T*>(policy->get_value(&object));
         return *r;
     }
@@ -282,7 +286,11 @@ public:
     template<typename T>
     const T& cast() const
     {
+    #if 0 // MB patch
         if (policy->type() != typeid(T)) throw anyimpl::bad_any_cast();
+    #elseif
+        assert(policy->type() == typeid(T));
+    #endif // MB patch
         const T* r = reinterpret_cast<const T*>(policy->get_value(&object));
         return *r;
     }

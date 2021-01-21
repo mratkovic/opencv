@@ -300,14 +300,19 @@ protected:
     void initBackend()
     {
         AutoLock lock(getInitializationMutex());
-        try {
+    #ifndef OCV_EXCEPTIONS_DISABLED
+        try
+    #endif
+        {
             if (!initialized)
                 loadPlugin();
         }
+    #ifndef OCV_EXCEPTIONS_DISABLED
         catch (...)
         {
             CV_LOG_INFO(NULL, "Video I/O: exception during plugin loading: " << baseName_ << ". SKIP");
         }
+    #endif
         initialized = true;
     }
     void loadPlugin();
@@ -404,7 +409,9 @@ void PluginBackendFactory::loadPlugin()
         Ptr<DynamicLib> lib = makePtr<DynamicLib>(plugin);
         if (!lib->isLoaded())
             continue;
+    #ifndef OCV_EXCEPTIONS_DISABLED
         try
+    #endif
         {
             Ptr<PluginBackend> pluginBackend = makePtr<PluginBackend>(lib);
             if (pluginBackend && pluginBackend->plugin_api_)
@@ -422,10 +429,12 @@ void PluginBackendFactory::loadPlugin()
                 }
             }
         }
+    #ifndef OCV_EXCEPTIONS_DISABLED
         catch (...)
         {
             CV_LOG_WARNING(NULL, "Video I/O: exception during plugin initialization: " << toPrintablePath(plugin) << ". SKIP");
         }
+    #endif
     }
 }
 
@@ -620,44 +629,56 @@ public:
 
 Ptr<IVideoCapture> PluginBackend::createCapture(int camera) const
 {
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (plugin_api_)
             return PluginCapture::create(plugin_api_, std::string(), camera); //.staticCast<IVideoCapture>();
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (...)
     {
         CV_LOG_DEBUG(NULL, "Video I/O: can't create camera capture: " << camera);
     }
+#endif
     return Ptr<IVideoCapture>();
 }
 
 Ptr<IVideoCapture> PluginBackend::createCapture(const std::string &filename) const
 {
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (plugin_api_)
             return PluginCapture::create(plugin_api_, filename, 0); //.staticCast<IVideoCapture>();
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (...)
     {
         CV_LOG_DEBUG(NULL, "Video I/O: can't open file capture: " << filename);
     }
+#endif
     return Ptr<IVideoCapture>();
 }
 
 Ptr<IVideoWriter> PluginBackend::createWriter(const std::string& filename, int fourcc, double fps,
                                               const cv::Size& sz, const VideoWriterParameters& params) const
 {
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (plugin_api_)
             return PluginWriter::create(plugin_api_, filename, fourcc, fps, sz, params); //.staticCast<IVideoWriter>();
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (...)
     {
         CV_LOG_DEBUG(NULL, "Video I/O: can't open writer: " << filename);
     }
+#endif
     return Ptr<IVideoWriter>();
 }
 

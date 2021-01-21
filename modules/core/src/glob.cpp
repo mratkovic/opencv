@@ -231,7 +231,9 @@ static void glob_rec(const cv::String& directory, const cv::String& wildchart, s
     if ((dir = opendir (directory.c_str())) != 0)
     {
         /* find all the files and directories within directory */
+#ifndef OCV_EXCEPTIONS_DISABLED
         try
+#endif
         {
             struct dirent *ent;
             while ((ent = readdir (dir)) != 0)
@@ -255,11 +257,13 @@ static void glob_rec(const cv::String& directory, const cv::String& wildchart, s
                     result.push_back(entry);
             }
         }
+#ifndef OCV_EXCEPTIONS_DISABLED
         catch (...)
         {
             closedir(dir);
             throw;
         }
+#endif
         closedir(dir);
     }
     else

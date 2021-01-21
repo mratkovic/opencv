@@ -70,7 +70,19 @@ namespace cv {
 
 static void* OutOfMemoryError(size_t size)
 {
+    (void)size; // MB patch
+#ifndef NDEBUG // MB patch
     CV_Error_(CV_StsNoMem, ("Failed to allocate %llu bytes", (unsigned long long)size));
+#elif TNUN_MALLOC_OVERCOMMIT != TNUN_OVERCOMMIT_Full // MB patch
+#ifndef OCV_EXCEPTIONS_DISABLED
+    throw std::bad_alloc();
+#endif
+#elif defined( __GNUC__ )
+    __builtin_unreachable();
+#else
+    __assume( false );
+#endif // NDEBUG
+    return 0;
 }
 
 CV_EXPORTS cv::utils::AllocatorStatisticsInterface& getAllocatorStatistics();
@@ -125,9 +137,9 @@ static const bool g_force_initialization_memalign_flag
 
 #ifdef OPENCV_ALLOC_ENABLE_STATISTICS
 static inline
-void* fastMalloc_(size_t size)
+void* fastMalloc_(size_t size) TNUN_NOEXCEPT_EXCEPT_BADALLOC // MB patch
 #else
-void* fastMalloc(size_t size)
+void* fastMalloc(size_t size) TNUN_NOEXCEPT_EXCEPT_BADALLOC // MB patch
 #endif
 {
 #ifdef HAVE_POSIX_MEMALIGN
@@ -159,9 +171,9 @@ void* fastMalloc(size_t size)
 
 #ifdef OPENCV_ALLOC_ENABLE_STATISTICS
 static inline
-void fastFree_(void* ptr)
+void fastFree_(void* ptr) noexcept // MB patch
 #else
-void fastFree(void* ptr)
+void fastFree(void* ptr) noexcept // MB patch
 #endif
 {
 #if defined HAVE_POSIX_MEMALIGN || defined HAVE_MEMALIGN

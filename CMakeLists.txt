@@ -1403,6 +1403,7 @@ endif()
 
 # Order is similar to CV_PARALLEL_FRAMEWORK in core/src/parallel.cpp
 ocv_build_features_string(parallel_status EXCLUSIVE
+  IF HAVE_SWEATER THEN "MB sweater"
   IF HAVE_TBB THEN "TBB (ver ${TBB_VERSION_MAJOR}.${TBB_VERSION_MINOR} interface ${TBB_INTERFACE_VERSION})"
   IF HAVE_HPX THEN "HPX"
   IF HAVE_OPENMP THEN "OpenMP"

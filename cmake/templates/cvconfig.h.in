@@ -121,6 +121,9 @@
 /* parallel_for with pthreads */
 #cmakedefine HAVE_PTHREADS_PF
 
+/* parallel for with MB sweater */
+#cmakedefine HAVE_SWEATER
+
 /* Qt support */
 #cmakedefine HAVE_QT
 
@@ -160,6 +163,9 @@
 
 /* OpenCV trace utilities */
 #cmakedefine OPENCV_TRACE
+
+/* Are we building without exceptions support? */
+#cmakedefine OCV_EXCEPTIONS_DISABLED
 
 /* Library QR-code decoding */
 #cmakedefine HAVE_QUIRC

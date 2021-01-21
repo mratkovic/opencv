@@ -722,7 +722,9 @@ public:
             strbufpos = bufOffset;
             bufofs = 0;
 
+#ifndef OCV_EXCEPTIONS_DISABLED
             try
+#endif
             {
                 char* ptr = bufferStart();
                 ptr[0] = ptr[1] = ptr[2] = '\0';
@@ -760,12 +762,14 @@ public:
                     }
                 }
             }
+#ifndef OCV_EXCEPTIONS_DISABLED
             catch(...)
             {
                 is_opened = true;
                 release();
                 throw;
             }
+#endif
 
             // release resources that we do not need anymore
             closeFile();
@@ -1823,18 +1827,22 @@ FileStorage::~FileStorage()
 
 bool FileStorage::open(const String& filename, int flags, const String& encoding)
 {
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         bool ok = p->open(filename.c_str(), flags, encoding.c_str());
         if(ok)
             state = FileStorage::NAME_EXPECTED + FileStorage::INSIDE_MAP;
         return ok;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (...)
     {
         release();
         throw;  // re-throw
     }
+#endif
 }
 
 bool FileStorage::isOpened() const { return p->is_opened; }

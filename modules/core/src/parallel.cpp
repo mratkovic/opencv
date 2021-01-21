@@ -95,7 +95,9 @@
    - HAVE_PTHREADS_PF - pthreads if available
 */
 
-#if defined HAVE_TBB
+#if defined HAVE_SWEATER // MB patch
+    // implemented in MB CoreUtils
+#elif defined HAVE_TBB
     #ifndef TBB_SUPPRESS_DEPRECATED_MESSAGES  // supress warning
     #define TBB_SUPPRESS_DEPRECATED_MESSAGES 1
     #endif
@@ -128,8 +130,9 @@
     #include <ppl.h>
 #endif
 
-
-#if defined HAVE_TBB
+#if defined HAVE_SWEATER
+#  define CV_PARALLEL_FRAMEWORK "sweater"
+#elif defined HAVE_TBB
 #  define CV_PARALLEL_FRAMEWORK "tbb"
 #elif defined HAVE_HPX
 #  define CV_PARALLEL_FRAMEWORK "hpx"
@@ -139,28 +142,27 @@
 #  define CV_PARALLEL_FRAMEWORK "gcd"
 #elif defined WINRT
 #  define CV_PARALLEL_FRAMEWORK "winrt-concurrency"
+#if _MSC_VER >= 1900
+#include <ppl.h>
+#endif
 #elif defined HAVE_CONCURRENCY
 #  define CV_PARALLEL_FRAMEWORK "ms-concurrency"
 #elif defined HAVE_PTHREADS_PF
 #  define CV_PARALLEL_FRAMEWORK "pthreads"
 #endif
 
-#ifdef CV_PARALLEL_FRAMEWORK
 #include <atomic>
+namespace cv
+{
+#ifdef HAVE_SWEATER // MB patch
+    void parallel_for_pthreads(const cv::Range& range, const cv::ParallelLoopBody& body, double nstripes);
+    size_t parallel_pthreads_get_threads_num();
+    void parallel_pthreads_set_threads_num(int num);
 #endif
 
-#include "parallel_impl.hpp"
-
-#include "opencv2/core/detail/exception_ptr.hpp"  // CV__EXCEPTION_PTR = 1 if std::exception_ptr is available
-
-using namespace cv;
-
-namespace cv {
-
-ParallelLoopBody::~ParallelLoopBody() {}
-
-namespace {
-
+#ifndef HAVE_SWEATER // MB patch
+namespace
+{
 #ifdef CV_PARALLEL_FRAMEWORK
 #ifdef ENABLE_INSTRUMENTATION
     static void SyncNodes(cv::instr::InstrNode *pNode)
@@ -598,7 +600,6 @@ static void parallel_for_impl(const cv::Range& range, const cv::ParallelLoopBody
 }
 #endif // CV_PARALLEL_FRAMEWORK
 
-
 int getNumThreads(void)
 {
 #ifdef CV_PARALLEL_FRAMEWORK
@@ -657,6 +658,8 @@ int getNumThreads(void)
 #endif
 }
 
+#endif // HAVE_SWEATER // MB patch
+
 unsigned defaultNumberOfThreads()
 {
 #ifdef __ANDROID__
@@ -682,12 +685,14 @@ unsigned defaultNumberOfThreads()
 void setNumThreads( int threads_ )
 {
     CV_UNUSED(threads_);
-#ifdef CV_PARALLEL_FRAMEWORK
+#if defined( CV_PARALLEL_FRAMEWORK ) && !defined( HAVE_SWEATER )
     int threads = (threads_ < 0) ? defaultNumberOfThreads() : (unsigned)threads_;
     numThreads = threads;
 #endif
 
-#ifdef HAVE_TBB
+#if defined HAVE_SWEATER
+    // unsupported
+#elif defined HAVE_TBB
 
 #if TBB_INTERFACE_VERSION >= 8000
     if(tbbArena.is_active()) tbbArena.terminate();

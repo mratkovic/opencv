@@ -454,12 +454,15 @@ imread_( const String& filename, int flags, Mat& mat )
     /// set the filename in the driver
     decoder->setSource( filename );
 
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         // read the header to make sure it succeeds
         if( !decoder->readHeader() )
             return 0;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const cv::Exception& e)
     {
         std::cerr << "imread_('" << filename << "'): can't read header: " << e.what() << std::endl << std::flush;
@@ -470,6 +473,7 @@ imread_( const String& filename, int flags, Mat& mat )
         std::cerr << "imread_('" << filename << "'): can't read header: unknown exception" << std::endl << std::flush;
         return 0;
     }
+#endif
 
 
     // established the required input image size
@@ -493,11 +497,14 @@ imread_( const String& filename, int flags, Mat& mat )
 
     // read the image data
     bool success = false;
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (decoder->readData(mat))
             success = true;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const cv::Exception& e)
     {
         std::cerr << "imread_('" << filename << "'): can't read data: " << e.what() << std::endl << std::flush;
@@ -506,6 +513,7 @@ imread_( const String& filename, int flags, Mat& mat )
     {
         std::cerr << "imread_('" << filename << "'): can't read data: unknown exception" << std::endl << std::flush;
     }
+#endif
     if (!success)
     {
         mat.release();
@@ -555,12 +563,15 @@ imreadmulti_(const String& filename, int flags, std::vector<Mat>& mats)
     decoder->setSource(filename);
 
     // read the header to make sure it succeeds
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         // read the header to make sure it succeeds
         if( !decoder->readHeader() )
             return 0;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const cv::Exception& e)
     {
         std::cerr << "imreadmulti_('" << filename << "'): can't read header: " << e.what() << std::endl << std::flush;
@@ -571,6 +582,7 @@ imreadmulti_(const String& filename, int flags, std::vector<Mat>& mats)
         std::cerr << "imreadmulti_('" << filename << "'): can't read header: unknown exception" << std::endl << std::flush;
         return 0;
     }
+#endif
 
     for (;;)
     {
@@ -594,11 +606,14 @@ imreadmulti_(const String& filename, int flags, std::vector<Mat>& mats)
         // read the image data
         Mat mat(size.height, size.width, type);
         bool success = false;
+#ifndef OCV_EXCEPTIONS_DISABLED
         try
+#endif
         {
             if (decoder->readData(mat))
                 success = true;
         }
+#ifndef OCV_EXCEPTIONS_DISABLED
         catch (const cv::Exception& e)
         {
             std::cerr << "imreadmulti_('" << filename << "'): can't read data: " << e.what() << std::endl << std::flush;
@@ -607,6 +622,7 @@ imreadmulti_(const String& filename, int flags, std::vector<Mat>& mats)
         {
             std::cerr << "imreadmulti_('" << filename << "'): can't read data: unknown exception" << std::endl << std::flush;
         }
+#endif
         if (!success)
             break;
 
@@ -708,7 +724,9 @@ static bool imwrite_( const String& filename, const std::vector<Mat>& img_vec,
     encoder->setDestination( filename );
     CV_Assert(params.size() <= CV_IO_MAX_IMAGE_PARAMS*2);
     bool code = false;
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (!isMultiImg)
             code = encoder->write( write_vec[0], params );
@@ -732,6 +750,7 @@ static bool imwrite_( const String& filename, const std::vector<Mat>& img_vec,
             }
         }
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const cv::Exception& e)
     {
         std::cerr << "imwrite_('" << filename << "'): can't write data: " << e.what() << std::endl << std::flush;
@@ -740,6 +759,7 @@ static bool imwrite_( const String& filename, const std::vector<Mat>& img_vec,
     {
         std::cerr << "imwrite_('" << filename << "'): can't write data: unknown exception" << std::endl << std::flush;
     }
+#endif
 
     //    CV_Assert( code );
     return code;
@@ -810,11 +830,14 @@ imdecode_( const Mat& buf, int flags, Mat& mat )
     }
 
     bool success = false;
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (decoder->readHeader())
             success = true;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const cv::Exception& e)
     {
         std::cerr << "imdecode_('" << filename << "'): can't read header: " << e.what() << std::endl << std::flush;
@@ -823,6 +846,7 @@ imdecode_( const Mat& buf, int flags, Mat& mat )
     {
         std::cerr << "imdecode_('" << filename << "'): can't read header: unknown exception" << std::endl << std::flush;
     }
+#endif
     if (!success)
     {
         decoder.release();
@@ -855,11 +879,14 @@ imdecode_( const Mat& buf, int flags, Mat& mat )
     mat.create( size.height, size.width, type );
 
     success = false;
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if (decoder->readData(mat))
             success = true;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const cv::Exception& e)
     {
         std::cerr << "imdecode_('" << filename << "'): can't read data: " << e.what() << std::endl << std::flush;
@@ -868,6 +895,7 @@ imdecode_( const Mat& buf, int flags, Mat& mat )
     {
         std::cerr << "imdecode_('" << filename << "'): can't read data: unknown exception" << std::endl << std::flush;
     }
+#endif
 
     if (!filename.empty())
     {

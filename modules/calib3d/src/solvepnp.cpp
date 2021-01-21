@@ -888,7 +888,9 @@ int solvePnPGeneric( InputArray _opoints, InputArray _ipoints,
         IPPE::PoseSolver poseSolver;
         Mat rvec1, tvec1, rvec2, tvec2;
         float reprojErr1, reprojErr2;
+    #ifndef OCV_EXCEPTIONS_DISABLED
         try
+    #endif
         {
             poseSolver.solveGeneric(opoints, undistortedPoints, rvec1, tvec1, reprojErr1, rvec2, tvec2, reprojErr2);
 
@@ -909,7 +911,9 @@ int solvePnPGeneric( InputArray _opoints, InputArray _ipoints,
                 vec_tvecs.push_back(tvec1);
             }
         }
+    #ifndef OCV_EXCEPTIONS_DISABLED
         catch (...) { }
+    #endif
     }
     else if (flags == SOLVEPNP_IPPE_SQUARE)
     {
@@ -961,7 +965,9 @@ int solvePnPGeneric( InputArray _opoints, InputArray _ipoints,
         IPPE::PoseSolver poseSolver;
         Mat rvec1, tvec1, rvec2, tvec2;
         float reprojErr1, reprojErr2;
+    #ifndef OCV_EXCEPTIONS_DISABLED
         try
+    #endif
         {
             poseSolver.solveSquare(opoints, undistortedPoints, rvec1, tvec1, reprojErr1, rvec2, tvec2, reprojErr2);
 
@@ -981,7 +987,10 @@ int solvePnPGeneric( InputArray _opoints, InputArray _ipoints,
                 vec_rvecs.push_back(rvec1);
                 vec_tvecs.push_back(tvec1);
             }
-        } catch (...) { }
+        }
+    #ifndef OCV_EXCEPTIONS_DISABLED
+        catch (...) { }
+    #endif
     }
     else if (flags == SOLVEPNP_SQPNP)
     {

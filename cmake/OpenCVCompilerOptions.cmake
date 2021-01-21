@@ -106,7 +106,8 @@ if(CV_GCC OR CV_CLANG)
     add_extra_compiler_option(-Wall)
   endif()
   add_extra_compiler_option(-Werror=return-type)
-  add_extra_compiler_option(-Werror=non-virtual-dtor)
+#   add_extra_compiler_option(-Werror=non-virtual-dtor) # MB patch (fails to compile due to changes in ParallelLoopBody)
+  add_extra_compiler_option(-Wno-deprecated-anon-enum-enum-conversion) # MB patch
   add_extra_compiler_option(-Werror=address)
   add_extra_compiler_option(-Werror=sequence-point)
   add_extra_compiler_option(-Wformat)
@@ -165,7 +166,7 @@ if(CV_GCC OR CV_CLANG)
   endif()
 
   # We need pthread's
-  if(UNIX AND NOT ANDROID AND NOT (APPLE AND CV_CLANG)) # TODO
+  if(UNIX AND NOT ANDROID AND NOT EMSCRIPTEN AND NOT (APPLE AND CMAKE_COMPILER_IS_CLANGCXX))
     add_extra_compiler_option(-pthread)
   endif()
 

@@ -57,6 +57,7 @@
 #include <ostream>
 
 #include <functional>
+#include <memory> // MB patch
 
 #if !defined(_M_CEE)
 #include <mutex>  // std::mutex, std::lock_guard
@@ -574,7 +575,7 @@ static inline size_t getElemSize(int type) { return (size_t)CV_ELEM_SIZE(type); 
 class CV_EXPORTS ParallelLoopBody
 {
 public:
-    virtual ~ParallelLoopBody();
+protected: ~ParallelLoopBody() = default; public: // MB patch
     virtual void operator() (const Range& range) const = 0;
 };
 
@@ -622,7 +623,7 @@ void Mat::forEach_impl(const Functor& operation) {
     public:
         PixelOperationWrapper(Mat_<_Tp>* const frame, const Functor& _operation)
             : mat(frame), op(_operation) {}
-        virtual ~PixelOperationWrapper(){}
+        // MB patch virtual ~PixelOperationWrapper(){}
         // ! Overloaded virtual operator
         // convert range call to row call.
         virtual void operator()(const Range &range) const CV_OVERRIDE
@@ -634,7 +635,8 @@ void Mat::forEach_impl(const Functor& operation) {
                     this->rowCall2(row, COLS);
                 }
             } else {
-                std::vector<int> idx(DIMS); /// idx is modified in this->rowCall
+                // MB patch std::vector<int> idx(COLS); /// idx is modified in this->rowCall
+                auto const idx(std::make_unique<int[]>(COLS));
                 idx[DIMS - 2] = range.start - 1;
 
                 for (int line_num = range.start; line_num < range.end; ++line_num) {

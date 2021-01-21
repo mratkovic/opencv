@@ -93,7 +93,7 @@ The function allocates the buffer of the specified size and returns it. When the
 bytes or more, the returned buffer is aligned to 16 bytes.
 @param bufSize Allocated buffer size.
  */
-CV_EXPORTS void* fastMalloc(size_t bufSize);
+CV_EXPORTS void* fastMalloc(size_t bufSize) TNUN_NOEXCEPT_EXCEPT_BADALLOC; // MB patch
 
 /** @brief Deallocates a memory buffer.
 
@@ -102,7 +102,7 @@ function does nothing. C version of the function clears the pointer *pptr* to av
 double memory deallocation.
 @param ptr Pointer to the allocated buffer.
  */
-CV_EXPORTS void fastFree(void* ptr);
+CV_EXPORTS void fastFree(void* ptr) noexcept; // MB patch
 
 /*!
   The STL-compliant memory Allocator based on cv::fastMalloc() and cv::fastFree()

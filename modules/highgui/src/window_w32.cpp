@@ -44,6 +44,7 @@
 using namespace cv;
 
 #include <windowsx.h> // required for GET_X_LPARAM() and GET_Y_LPARAM() macros
+#include <Commdlg.h>
 
 #if defined _WIN32
 

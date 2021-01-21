@@ -72,6 +72,7 @@ AsyncArray testAsyncArray(InputArray argument)
     return p.getArrayResult();
 }
 
+#ifndef OCV_EXCEPTIONS_DISABLED
 CV_WRAP static inline
 AsyncArray testAsyncException()
 {
@@ -86,6 +87,7 @@ AsyncArray testAsyncException()
     }
     return p.getArrayResult();
 }
+#endif
 
 //! @}
 }} // namespace

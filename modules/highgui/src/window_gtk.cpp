@@ -1691,14 +1691,18 @@ static gboolean icvOnKeyPress(GtkWidget* widget, GdkEventKey* event, gpointer us
 
     if ( BIT_ALLIN(event->state, GDK_CONTROL_MASK) && (event->keyval == GDK_s || event->keyval == GDK_S))
     {
+#ifndef OCV_EXCEPTIONS_DISABLED
         try
+#endif
         {
             icvShowSaveAsDialog(widget, (CvWindow*)user_data);
         }
+#ifndef OCV_EXCEPTIONS_DISABLED
         catch(...)
         {
             // suppress all exceptions here
         }
+#endif
     }
 
     switch( event->keyval )

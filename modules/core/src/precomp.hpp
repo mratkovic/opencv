@@ -76,7 +76,7 @@
 #include <cstring>
 #include <cassert>
 
-#define USE_SSE2  (cv::checkHardwareSupport(CV_CPU_SSE2))
+#define USE_SSE2  1 // MB patch (cv::checkHardwareSupport(CV_CPU_SSE))
 #define USE_SSE4_2  (cv::checkHardwareSupport(CV_CPU_SSE4_2))
 #define USE_AVX  (cv::checkHardwareSupport(CV_CPU_AVX))
 #define USE_AVX2  (cv::checkHardwareSupport(CV_CPU_AVX2))

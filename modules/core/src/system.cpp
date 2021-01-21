@@ -1106,6 +1106,7 @@ static void cv_terminate_handler() {
 
 void error( const Exception& exc )
 {
+#ifndef NDEBUG // MB patch
 #ifdef CV_ERROR_SET_TERMINATE_HANDLER
     {
         cv::AutoLock lock(getInitializationMutex());
@@ -1133,26 +1134,25 @@ void error( const Exception& exc )
         *p = 0;
     }
 
+#ifndef OCV_EXCEPTIONS_DISABLED
     throw exc;
-#ifdef __GNUC__
-# if !defined __clang__ && !defined __APPLE__
-    // this suppresses this warning: "noreturn" function does return [enabled by default]
-    __builtin_trap();
-    // or use infinite loop: for (;;) {}
-# endif
 #endif
+#elif defined( __GNUC__ ) // !defined NDEBUG
+	__builtin_trap();
+#else
+	std::terminate();
+#endif // MB patch
 }
 
 void error(int _code, const String& _err, const char* _func, const char* _file, int _line)
 {
+#ifndef NDEBUG // MB patch
     error(cv::Exception(_code, _err, _func, _file, _line));
-#ifdef __GNUC__
-# if !defined __clang__ && !defined __APPLE__
-    // this suppresses this warning: "noreturn" function does return [enabled by default]
-    __builtin_trap();
-    // or use infinite loop: for (;;) {}
-# endif
-#endif
+#elif defined( __GNUC__ )
+	__builtin_trap();
+#else
+	std::terminate();
+#endif // MB patch
 }
 
 #ifdef __GNUC__
@@ -1885,7 +1885,12 @@ inline bool parseOption(const std::string & value)
     {
         return false;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     throw ParseError(value);
+#else
+    CV_Error( cv::Error::StsBadArg, "Failed to parse boolean" );
+    return false;
+#endif
 }
 
 template<>
@@ -1906,7 +1911,12 @@ inline size_t parseOption(const std::string &value)
         return v * 1024 * 1024;
     else if (suffixStr == "KB" || suffixStr == "Kb" || suffixStr == "kb")
         return v * 1024;
+#ifndef OCV_EXCEPTIONS_DISABLED
     throw ParseError(value);
+#else
+    CV_Error( cv::Error::StsBadArg, "Failed to parse size_t" );
+    return 0;
+#endif
 }
 
 template<>
@@ -1949,16 +1959,20 @@ static inline const char * envRead(const char * name)
 template<typename T>
 inline T read(const std::string & k, const T & defaultValue)
 {
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         const char * res = envRead(k.c_str());
         if (res)
             return parseOption<T>(std::string(res));
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (const ParseError &err)
     {
         CV_Error(cv::Error::StsBadArg, err.toString(k));
     }
+#endif
     return defaultValue;
 }
 

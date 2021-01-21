@@ -110,7 +110,9 @@ bool VideoCapture::open(const String& filename, int apiPreference)
             const Ptr<IBackend> backend = info.backendFactory->getBackend();
             if (!backend.empty())
             {
+            #ifndef OCV_EXCEPTIONS_DISABLED
                 try
+            #endif
                 {
                     icap = backend->createCapture(filename);
                     if (!icap.empty())
@@ -131,6 +133,7 @@ bool VideoCapture::open(const String& filename, int apiPreference)
                                                         info.name));
                     }
                 }
+            #ifndef OCV_EXCEPTIONS_DISABLED
                 catch (const cv::Exception& e)
                 {
                     if (throwOnFail && apiPreference != CAP_ANY)
@@ -160,6 +163,7 @@ bool VideoCapture::open(const String& filename, int apiPreference)
                                  cv::format("VIDEOIO(%s): raised unknown C++ exception!\n\n",
                                             info.name));
                 }
+            #endif
             }
             else
             {
@@ -214,7 +218,9 @@ bool VideoCapture::open(int cameraNum, int apiPreference)
             const Ptr<IBackend> backend = info.backendFactory->getBackend();
             if (!backend.empty())
             {
+            #ifndef OCV_EXCEPTIONS_DISABLED
                 try
+            #endif
                 {
                     icap = backend->createCapture(cameraNum);
                     if (!icap.empty())
@@ -235,6 +241,7 @@ bool VideoCapture::open(int cameraNum, int apiPreference)
                                                         info.name));
                     }
                 }
+            #ifndef OCV_EXCEPTIONS_DISABLED
                 catch (const cv::Exception& e)
                 {
                     if (throwOnFail && apiPreference != CAP_ANY)
@@ -264,6 +271,7 @@ bool VideoCapture::open(int cameraNum, int apiPreference)
                                  cv::format("VIDEOIO(%s): raised unknown C++ exception!\n\n",
                                             info.name));
                 }
+            #endif
             }
             else
             {
@@ -526,7 +534,9 @@ bool VideoWriter::open(const String& filename, int apiPreference, int fourcc, do
             const Ptr<IBackend> backend = info.backendFactory->getBackend();
             if (!backend.empty())
             {
+            #ifndef OCV_EXCEPTIONS_DISABLED
                 try
+            #endif
                 {
                     iwriter = backend->createWriter(filename, fourcc, fps, frameSize, parameters);
                     if (!iwriter.empty())
@@ -556,6 +566,7 @@ bool VideoWriter::open(const String& filename, int apiPreference, int fourcc, do
                                                              info.name));
                     }
                 }
+            #ifndef OCV_EXCEPTIONS_DISABLED
                 catch (const cv::Exception& e)
                 {
                     CV_LOG_ERROR(NULL,
@@ -573,6 +584,7 @@ bool VideoWriter::open(const String& filename, int apiPreference, int fourcc, do
                                  cv::format("VIDEOIO(%s): raised unknown C++ exception!\n\n",
                                             info.name));
                 }
+            #endif
             }
             else
             {

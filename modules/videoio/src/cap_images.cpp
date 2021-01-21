@@ -434,17 +434,21 @@ Ptr<IVideoWriter> create_Images_writer(const std::string &filename, int, double,
 {
     CvVideoWriter_Images *writer = new CvVideoWriter_Images;
 
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         if( writer->open( filename.c_str() ))
             return makePtr<LegacyWriter>(writer);
         delete writer;
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch (...)
     {
         delete writer;
         throw;
     }
+#endif
 
     return 0;
 }

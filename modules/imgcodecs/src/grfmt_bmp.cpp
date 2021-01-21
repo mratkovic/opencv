@@ -89,7 +89,9 @@ bool  BmpDecoder::readHeader()
     else if( !m_strm.open( m_filename ))
         return false;
 
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         m_strm.skip( 10 );
         m_offset = m_strm.getDWord();
@@ -175,10 +177,12 @@ bool  BmpDecoder::readHeader()
             }
         }
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch(...)
     {
         throw;
     }
+#endif
     // in 32 bit case alpha channel is used - so require CV_8UC4 type
     m_type = iscolor ? (m_bpp == 32 ? CV_8UC4 : CV_8UC3 ) : CV_8UC1;
     m_origin = m_height > 0 ? ORIGIN_BL : ORIGIN_TL;
@@ -230,7 +234,9 @@ bool  BmpDecoder::readData( Mat& img )
     }
     uchar *src = _src.data(), *bgr = _bgr.data();
 
+#ifndef OCV_EXCEPTIONS_DISABLED
     try
+#endif
     {
         m_strm.setPos( m_offset );
 
@@ -495,10 +501,12 @@ decode_rle8_bad: ;
             CV_Error(cv::Error::StsError, "Invalid/unsupported mode");
         }
     }
+#ifndef OCV_EXCEPTIONS_DISABLED
     catch(...)
     {
         throw;
     }
+#endif
 
     return result;
 }

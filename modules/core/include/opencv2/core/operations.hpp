@@ -398,8 +398,8 @@ inline bool RNG::operator ==(const RNG& other) const { return state == other.sta
 
 inline unsigned RNG::next()
 {
-    state = (uint64)(unsigned)state* /*CV_RNG_COEFF*/ 4164903690U + (unsigned)(state >> 32);
-    return (unsigned)state;
+    state = (uint64)(unsigned)(state & 0xFFFFFFFF) * /*CV_RNG_COEFF*/ 4164903690U + (unsigned)( ( state >> 32 ) & 0xFFFFFFFF );
+    return (unsigned)( state & 0xFFFFFFFF );
 }
 
 //! returns the next uniformly-distributed random number of the specified type

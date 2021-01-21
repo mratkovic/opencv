@@ -99,7 +99,11 @@ void  RBaseStream::readBlock()
     {
         if( m_block_pos == 0 && m_current < m_end )
             return;
+    #ifndef OCV_EXCEPTIONS_DISABLED
         throw RBS_THROW_EOS;
+    #else
+        CV_Error( cv::Error::StsError, "End of stream!" );
+    #endif
     }
 
     fseek( m_file, m_block_pos, SEEK_SET );
@@ -107,7 +111,11 @@ void  RBaseStream::readBlock()
     m_end = m_start + readed;
 
     if( readed == 0 || m_current >= m_end )
+    #ifndef OCV_EXCEPTIONS_DISABLED
         throw RBS_THROW_EOS;
+    #else
+        CV_Error( cv::Error::StsError, "End of stream!" );
+    #endif
 }
 
 

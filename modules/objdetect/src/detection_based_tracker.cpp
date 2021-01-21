@@ -208,6 +208,7 @@ bool cv::DetectionBasedTracker::SeparateDetectionWork::run()
     return true;
 }
 
+#ifndef OCV_EXCEPTIONS_DISABLED
 #define CATCH_ALL_AND_LOG(_block)                                                           \
     try {                                                                                   \
         _block;                                                                             \
@@ -219,15 +220,25 @@ bool cv::DetectionBasedTracker::SeparateDetectionWork::run()
     } catch(...) {                                                                          \
         LOGE0("\n %s: ERROR: UNKNOWN Exception caught\n\n", CV_Func);                       \
     }
+#else
+#define CATCH_ALL_AND_LOG(_block)                                                           \
+{ \
+    _block; \
+}
+#endif
 
 void* cv::workcycleObjectDetectorFunction(void* p)
 {
     CATCH_ALL_AND_LOG({ ((cv::DetectionBasedTracker::SeparateDetectionWork*)p)->workcycleObjectDetector(); });
+#ifndef OCV_EXCEPTIONS_DISABLED
     try{
+#endif
         ((cv::DetectionBasedTracker::SeparateDetectionWork*)p)->init();
+#ifndef OCV_EXCEPTIONS_DISABLED
     } catch(...) {
         LOGE0("DetectionBasedTracker: workcycleObjectDetectorFunction: ERROR concerning pointer, received as the function parameter");
     }
+#endif
     return NULL;
 }
 

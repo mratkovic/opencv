@@ -116,7 +116,7 @@ static void from_str(const String& str, Param type, void* dst)
         CV_Error_(Error::StsBadArg, ("can not convert: [%s] to [%s]", str.c_str(), get_type_name(type)));
     }
 }
-
+#ifndef OCV_EXCEPTIONS_DISABLED
 void CommandLineParser::getByName(const String& name, bool space_delete, Param type, void* dst) const
 {
     try
@@ -186,6 +186,7 @@ void CommandLineParser::getByIndex(int index, bool space_delete, Param type, voi
 
     CV_Error_(Error::StsBadArg, ("undeclared position %d requested", index));
 }
+#endif
 
 static bool cmp_params(const CommandLineParserParams & p1, const CommandLineParserParams & p2)
 {
@@ -450,7 +451,7 @@ void CommandLineParser::printMessage() const
         }
     }
 }
-
+#ifndef OCV_EXCEPTIONS_DISABLED
 std::vector<String> CommandLineParser::Impl::split_range_string(const String& _str, char fs, char ss) const
 {
     String str = _str;
@@ -522,7 +523,7 @@ std::vector<String> CommandLineParser::Impl::split_range_string(const String& _s
 
     return vec;
 }
-
+#endif
 std::vector<String> CommandLineParser::Impl::split_string(const String& _str, char symbol, bool create_empty_item) const
 {
     String str = _str;

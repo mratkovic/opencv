@@ -1195,7 +1195,9 @@ bool useOpenCL()
     CoreTLSData& data = getCoreTlsData();
     if (data.useOpenCL < 0)
     {
+#ifndef OCV_EXCEPTIONS_DISABLED
         try
+#endif
         {
             data.useOpenCL = 0;
             if (haveOpenCL())
@@ -1204,10 +1206,12 @@ bool useOpenCL()
                 data.useOpenCL = c.useOpenCL();
             }
         }
+#ifndef OCV_EXCEPTIONS_DISABLED
         catch (...)
         {
             CV_LOG_INFO(NULL, "OpenCL: can't initialize thread OpenCL execution context");
         }
+#endif
     }
     return data.useOpenCL > 0;
 }
