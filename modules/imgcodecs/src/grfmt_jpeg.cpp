@@ -232,7 +232,7 @@ bool  JpegDecoder::readHeader()
         if( !m_buf.empty() )
         {
             jpeg_buffer_src(&state->cinfo, &state->source);
-            state->source.pub.next_input_byte = m_buf.ptr();
+            state->source.pub.next_input_byte = reinterpret_cast< JOCTET const * >( m_buf.ptr() );
             state->source.pub.bytes_in_buffer = m_buf.cols*m_buf.rows*m_buf.elemSize();
         }
         else
@@ -468,16 +468,16 @@ bool  JpegDecoder::readData( Mat& img )
                 if( color )
                 {
                     if( cinfo->out_color_components == 3 )
-                        icvCvt_RGB2BGR_8u_C3R( buffer[0], 0, data, 0, Size(m_width,1) );
+                        icvCvt_RGB2BGR_8u_C3R( reinterpret_cast< uchar const * >( buffer[0] ), 0, data, 0, Size(m_width,1) );
                     else
-                        icvCvt_CMYK2BGR_8u_C4C3R( buffer[0], 0, data, 0, Size(m_width,1) );
+                        icvCvt_CMYK2BGR_8u_C4C3R( reinterpret_cast< uchar const * >( buffer[0] ), 0, data, 0, Size(m_width,1) );
                 }
                 else
                 {
                     if( cinfo->out_color_components == 1 )
                         memcpy( data, buffer[0], m_width );
                     else
-                        icvCvt_CMYK2Gray_8u_C4C1R( buffer[0], 0, data, 0, Size(m_width,1) );
+                        icvCvt_CMYK2Gray_8u_C4C1R( reinterpret_cast< uchar const * >( buffer[0] ), 0, data, 0, Size(m_width,1) );
                 }
             }
 
@@ -524,7 +524,7 @@ empty_output_buffer (j_compress_ptr cinfo)
     dest->dst->resize(sz + bufsz);
     memcpy( &(*dest->dst)[0] + sz, &(*dest->buf)[0], bufsz);
 
-    dest->pub.next_output_byte = &(*dest->buf)[0];
+    dest->pub.next_output_byte = reinterpret_cast< JOCTET * >( &(*dest->buf)[0] );
     dest->pub.free_in_buffer = bufsz;
     return TRUE;
 }
@@ -596,7 +596,7 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
 
         jpeg_buffer_dest( &cinfo, &dest );
 
-        dest.pub.next_output_byte = &out_buf[0];
+        dest.pub.next_output_byte = reinterpret_cast< JOCTET * >( &out_buf[0] );
         dest.pub.free_in_buffer = out_buf.size();
     }
 
@@ -713,7 +713,7 @@ bool JpegEncoder::write( const Mat& img, const std::vector<int>& params )
                 ptr = buffer;
             }
 
-            jpeg_write_scanlines( &cinfo, &ptr, 1 );
+            jpeg_write_scanlines( &cinfo, reinterpret_cast< JSAMPARRAY >( &ptr ), 1 );
         }
 
         jpeg_finish_compress( &cinfo );
