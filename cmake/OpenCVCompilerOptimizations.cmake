@@ -715,6 +715,25 @@ macro(ocv_compiler_optimization_process_sources SOURCES_VAR_NAME LIBS_VAR_NAME T
         if(NOT __opt_found)
           ocv_get_smart_file_name(fname_ "${fname}")
           message(STATUS "Excluding from source files list: ${fname_}")
+          if ( XCODE ) # MB patch begin
+            message(STATUS "Excluding from source files list: ${fname_} only for non-x86_64 slices")
+            list(APPEND __result "${fname}")
+            # TODO: exclude NEON from Intel if required in future (no such sources currently found)
+            get_source_file_property(__definitions "${fname}" COMPILE_DEFINITIONS)
+            list( APPEND __definitions
+                CV_CPU_COMPILE_AVX2=1
+                CV_CPU_COMPILE_AVX=1
+                CV_CPU_COMPILE_FMA3=1
+                CV_CPU_COMPILE_FP16=1
+                CV_CPU_COMPILE_POPCNT=1
+                CV_CPU_COMPILE_SSE4_2=1
+            )
+            list( APPEND XCODE_INTEL64_EXCLUDED "${fname}" )
+            set_source_files_properties( "${fname}" PROPERTIES
+                COMPILE_FLAGS "-mpopcnt -msse4.2 -mf16c -mfma -mavx -mavx2"
+                COMPILE_DEFINITIONS "${__definitions}"
+            )
+          endif() # MB patch end
         endif()
       endif()
     else()

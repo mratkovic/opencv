@@ -877,7 +877,9 @@ macro(ocv_create_module)
 endmacro()
 
 macro(_ocv_create_module)
-
+  if ( XCODE ) # MB patch begin
+    unset( XCODE_INTEL64_EXCLUDED )
+  endif()  # MB patch end
   ocv_compiler_optimization_process_sources(OPENCV_MODULE_${the_module}_SOURCES OPENCV_MODULE_${the_module}_DEPS_EXT ${the_module})
   set(OPENCV_MODULE_${the_module}_HEADERS ${OPENCV_MODULE_${the_module}_HEADERS} CACHE INTERNAL "List of header files for ${the_module}")
   set(OPENCV_MODULE_${the_module}_SOURCES ${OPENCV_MODULE_${the_module}_SOURCES} CACHE INTERNAL "List of source files for ${the_module}")
@@ -934,6 +936,15 @@ macro(_ocv_create_module)
     ${_VS_VERSION_FILE}
     ${_DLLMAIN_FILE}
   )
+  if ( XCODE ) # MB patch begin
+    string( REPLACE ";" " " INTEL64_SRCS "${XCODE_INTEL64_EXCLUDED}" )
+    set_target_properties( ${the_module} PROPERTIES
+        XCODE_ATTRIBUTE_EXCLUDED_SOURCE_FILE_NAMES[arch=i386]   "${INTEL64_SRCS}"
+        XCODE_ATTRIBUTE_EXCLUDED_SOURCE_FILE_NAMES[arch=armv7]  "${INTEL64_SRCS}"
+        XCODE_ATTRIBUTE_EXCLUDED_SOURCE_FILE_NAMES[arch=armv7s] "${INTEL64_SRCS}"
+        XCODE_ATTRIBUTE_EXCLUDED_SOURCE_FILE_NAMES[arch=arm64]  "${INTEL64_SRCS}"
+    )
+  endif()
   set_target_properties(${the_module} PROPERTIES LABELS "${OPENCV_MODULE_${the_module}_LABEL};Module")
   set_source_files_properties(${OPENCV_MODULE_${the_module}_HEADERS} ${OPENCV_MODULE_${the_module}_SOURCES} ${${the_module}_pch}
     PROPERTIES LABELS "${OPENCV_MODULE_${the_module}_LABEL};Module")

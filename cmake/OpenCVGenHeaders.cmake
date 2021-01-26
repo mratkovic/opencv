@@ -5,7 +5,11 @@ install(FILES "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/cvconfig.h" DESTINATION ${OPENC
 
 # platform-specific config file
 ocv_compiler_optimization_fill_cpu_config()
-configure_file("${OpenCV_SOURCE_DIR}/cmake/templates/cv_cpu_config.h.in" "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/cv_cpu_config.h")
+if ( XCODE ) # MB patch
+    configure_file("${OpenCV_SOURCE_DIR}/cmake/templates/cv_cpu_config.h.xcode.in" "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/cv_cpu_config.h")
+else() # MB patch
+    configure_file("${OpenCV_SOURCE_DIR}/cmake/templates/cv_cpu_config.h.in" "${OPENCV_CONFIG_FILE_INCLUDE_DIR}/cv_cpu_config.h")
+endif()
 
 # ----------------------------------------------------------------------------
 #  opencv_modules.hpp based on actual modules list
