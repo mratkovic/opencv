@@ -727,6 +727,7 @@ macro(ocv_compiler_optimization_process_sources SOURCES_VAR_NAME LIBS_VAR_NAME T
                 CV_CPU_COMPILE_FP16=1
                 CV_CPU_COMPILE_POPCNT=1
                 CV_CPU_COMPILE_SSE4_2=1
+                CV_CPU_COMPILE_SSE4_1=1
             )
             list( APPEND XCODE_INTEL64_EXCLUDED "${fname}" )
             set_source_files_properties( "${fname}" PROPERTIES
