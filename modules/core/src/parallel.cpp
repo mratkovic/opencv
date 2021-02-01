@@ -744,6 +744,7 @@ void setNumThreads( int threads_ )
 }
 
 
+#ifndef HAVE_SWEATER  // MB patch
 int getThreadNum()
 {
 #if defined HAVE_TBB
@@ -770,6 +771,7 @@ int getThreadNum()
     return 0;
 #endif
 }
+#endif // MB patch
 
 
 #if defined __linux__ || defined __GLIBC__ || defined __HAIKU__ || defined __ANDROID__
