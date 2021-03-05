@@ -1241,7 +1241,7 @@ function(ocv_install_target)
     set(__target "${ARGV0}")
 
     # don't move this into global scope of this file: compiler settings (like MSVC variable) are not available during processing
-    if(BUILD_SHARED_LIBS)  # no defaults for static libs (modern CMake is required)
+    # if(BUILD_SHARED_LIBS)  # no defaults for static libs (modern CMake is required)
       if(NOT CMAKE_VERSION VERSION_LESS 3.6.0)
         option(INSTALL_PDB_COMPONENT_EXCLUDE_FROM_ALL "Don't install PDB files by default" ON)
         option(INSTALL_PDB "Add install PDB rules" ON)
@@ -1249,7 +1249,7 @@ function(ocv_install_target)
         option(INSTALL_PDB_COMPONENT_EXCLUDE_FROM_ALL "Don't install PDB files by default (not supported)" OFF)
         option(INSTALL_PDB "Add install PDB rules" OFF)
       endif()
-    endif()
+    # endif()
 
     if(INSTALL_PDB AND NOT INSTALL_IGNORE_PDB
         AND NOT OPENCV_${__target}_PDB_SKIP
@@ -1299,14 +1299,21 @@ function(ocv_install_target)
             install(FILES "$<TARGET_PDB_FILE:${__target}>" DESTINATION "${__dst}"
                 COMPONENT ${__pdb_install_component} OPTIONAL ${__pdb_exclude_from_all})
           else()
-            # There is no generator expression similar to TARGET_PDB_FILE and TARGET_PDB_FILE can't be used: https://gitlab.kitware.com/cmake/cmake/issues/16932
-            # However we still want .pdb files like: 'lib/Debug/opencv_core341d.pdb' or '3rdparty/lib/zlibd.pdb'
-            install(FILES "$<TARGET_PROPERTY:${__target},ARCHIVE_OUTPUT_DIRECTORY>/$<CONFIG>/$<IF:$<BOOL:$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_DEBUG>>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_DEBUG>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME>>.pdb"
-                DESTINATION "${__dst}" CONFIGURATIONS Debug
-                COMPONENT ${__pdb_install_component} OPTIONAL ${__pdb_exclude_from_all})
-            install(FILES "$<TARGET_PROPERTY:${__target},ARCHIVE_OUTPUT_DIRECTORY>/$<CONFIG>/$<IF:$<BOOL:$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_RELEASE>>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_RELEASE>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME>>.pdb"
-                DESTINATION "${__dst}" CONFIGURATIONS Release
-                COMPONENT ${__pdb_install_component} OPTIONAL ${__pdb_exclude_from_all})
+            if ( CMAKE_GENERATOR STREQUAL "Ninja" )
+                message( STATUS "Registering installation of ${CMAKE_BINARY_DIR}/opencv/lib/${__target}.pdb" )
+                install( FILES "${CMAKE_BINARY_DIR}/opencv/lib/${__target}.pdb"
+                    DESTINATION "${__dst}"
+                    COMPONENT libs )
+            else()
+                # There is no generator expression similar to TARGET_PDB_FILE and TARGET_PDB_FILE can't be used: https://gitlab.kitware.com/cmake/cmake/issues/16932
+                # However we still want .pdb files like: 'lib/Debug/opencv_core341d.pdb' or '3rdparty/lib/zlibd.pdb'
+                install(FILES "$<TARGET_PROPERTY:${__target},ARCHIVE_OUTPUT_DIRECTORY>/$<CONFIG>/$<IF:$<BOOL:$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_DEBUG>>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_DEBUG>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME>>.pdb"
+                    DESTINATION "${__dst}" CONFIGURATIONS Debug
+                    COMPONENT ${__pdb_install_component} OPTIONAL ${__pdb_exclude_from_all})
+                install(FILES "$<TARGET_PROPERTY:${__target},ARCHIVE_OUTPUT_DIRECTORY>/$<CONFIG>/$<IF:$<BOOL:$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_RELEASE>>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME_RELEASE>,$<TARGET_PROPERTY:${__target},COMPILE_PDB_NAME>>.pdb"
+                    DESTINATION "${__dst}" CONFIGURATIONS Release
+                    COMPONENT ${__pdb_install_component} OPTIONAL ${__pdb_exclude_from_all})
+            endif()
           endif()
         else()
           message(WARNING "PDB files installation is not supported (need CMake >= 3.1.0)")
