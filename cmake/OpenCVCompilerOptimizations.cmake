@@ -731,6 +731,8 @@ macro(ocv_compiler_optimization_process_sources SOURCES_VAR_NAME LIBS_VAR_NAME T
                 set( cflags "-mavx" )
             elseif( ${OPT_} STREQUAL "SSE4_2" )
                 set( cflags "-msse4.2" )
+            elseif( ${OPT_} STREQUAL "SSE4_1" )
+                set( cflags "-msse4.1" )
             endif()
             set_source_files_properties( "${fname}" PROPERTIES
                 COMPILE_FLAGS "${cflags}"
