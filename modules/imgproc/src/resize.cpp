@@ -1206,8 +1206,8 @@ static void resizeNN_bitexact( const Mat& src, Mat& dst, double /*fx*/, double /
     int ify = ((ssize.height << 16) + dsize.height / 2) / dsize.height;
     int ify0 = ify / 2 - 1;
 
-    cv::utils::BufferArea area;
     int* x_ofse = 0;
+    cv::utils::BufferArea area;
     area.allocate(x_ofse, dsize.width, CV_SIMD_WIDTH);
     area.commit();
 

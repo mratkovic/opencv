@@ -169,8 +169,8 @@ float calcOrientationHist(
 
     float expf_scale = -1.f/(2.f * sigma * sigma);
 
-    cv::utils::BufferArea area;
     float *X = 0, *Y = 0, *Mag, *Ori = 0, *W = 0, *temphist = 0;
+    cv::utils::BufferArea area;
     area.allocate(X, len, CV_SIMD_WIDTH);
     area.allocate(Y, len, CV_SIMD_WIDTH);
     area.allocate(Ori, len, CV_SIMD_WIDTH);
@@ -575,8 +575,8 @@ void calcSIFTDescriptor(
     int i, j, k, len = (radius*2+1)*(radius*2+1), histlen = (d+2)*(d+2)*(n+2);
     int rows = img.rows, cols = img.cols;
 
-    cv::utils::BufferArea area;
     float *X = 0, *Y = 0, *Mag, *Ori = 0, *W = 0, *RBin = 0, *CBin = 0, *hist = 0, *rawDst = 0;
+    cv::utils::BufferArea area;
     area.allocate(X, len, CV_SIMD_WIDTH);
     area.allocate(Y, len, CV_SIMD_WIDTH);
     area.allocate(Ori, len, CV_SIMD_WIDTH);
