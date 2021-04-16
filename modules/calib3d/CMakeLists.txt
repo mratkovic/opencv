@@ -12,6 +12,9 @@ ocv_define_module(calib3d opencv_imgproc opencv_features2d opencv_flann ${debug_
 ocv_target_link_libraries(${the_module} ${LAPACK_LIBRARIES})
 
 # MB patch begin
-# Calib3D module requires RTTI because it depends on FLANN's any.h
-target_compile_options( opencv_calib3d PRIVATE ${TNUN_compiler_rtti_on} )
+set_source_files_properties(
+  "src/chessboard.cpp"
+  "src/usac/ransac_solvers.cpp"
+  PROPERTIES COMPILE_FLAGS ${TNUN_compiler_rtti_on}
+)
 # MB patch end
